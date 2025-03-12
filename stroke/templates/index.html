@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stroke Prediction</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <script>
+        function validateForm() {
+            let age = document.getElementById("age").value;
+            let bmi = document.getElementById("bmi").value;
+            let glucose = document.getElementById("glucose").value;
+            if (age < 0 || bmi < 0 || glucose < 0) {
+                alert("Please enter valid positive values.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+    <script>
+        window.onload = function () {
+            // Detect if page is refreshed
+            const navigationType = performance.getEntriesByType("navigation")[0]?.type;
+            if (navigationType === "reload") {
+                document.getElementById('result').innerHTML = ''; // Clear result
+            }
+    
+            // Get user's location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    document.getElementById('latitude').value = position.coords.latitude;
+                    document.getElementById('longitude').value = position.coords.longitude;
+                });
+            }
+        };
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Stroke Prediction Form</h2>
+        <form action="{% url 'stroke_prediction' %}" method="post" onsubmit="return validateForm();">
+            {% csrf_token %}
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+            <label>Gender:</label>
+            <select name="gender">
+                <option>Male</option>
+                <option>Female</option>
+            </select>
+
+            <label>Age:</label>
+            <input type="number" name="age" id="age" step="0.1" required>
+
+            <label>Hypertension:</label>
+            <select name="hypertension">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select>
+
+            <label>Heart Disease:</label>    
+            <select name="heart_disease">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+            </select>
+
+            <label>Ever Married:</label>
+            <select name="ever_married">
+                <option>Yes</option>
+                <option>No</option>
+            </select>
+
+            <label>Work Type:</label>
+            <select name="work_type">
+                <option>Private</option>
+                <option>Self-employed</option>
+                <option>Children</option>
+                <option>Govt Job</option>
+                <option>Never Worked</option>
+            </select>
+
+            <label>Residence Type:</label>
+            <select name="residence_type">
+                <option>Urban</option>
+                <option>Rural</option>
+            </select>
+
+            <label>Average Glucose Level:</label>
+            <input type="number" name="avg_glucose_level" id="glucose" step="0.1" required>
+
+            <label>BMI:</label>
+            <input type="number" name="bmi" id="bmi" step="0.1" required>
+
+            <label>Smoking Status:</label>
+            <select name="smoking_status">
+                <option>never smoked</option>
+                <option>formerly smoked</option>      
+                <option>smokes</option>
+                <option>Unknown</option>
+            </select>
+
+            <button type="submit">Predict</button>
+        </form>
+
+        {% if result is not None %}
+            <h3 id="result">Prediction Result: {{ result }}</h3>
+        {% endif %}
+    </div>
+</body>
+</html>

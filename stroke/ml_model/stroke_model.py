@@ -5,10 +5,10 @@ import pandas as pd
 import os
 
 # Load the model
-loaded_model = joblib.load("D:\\codecraft essentials\\sayooj\\stroke_backend\\stroke\\ml_model\\decision_tree_model.pkl")
+loaded_model = joblib.load(r"D:\codecraft essentials\sayooj\stroke_backend\stroke\ml_model\best_model.pkl")
 
 # Load the scaler
-SCALER_PATH = "D:\codecraft essentials\sayooj\scaler.pkl"
+SCALER_PATH = r"D:\codecraft essentials\sayooj\stroke_backend\stroke\ml_model\scaler.pkl"
 
 # Check if file exists
 if os.path.exists(SCALER_PATH):
@@ -27,7 +27,7 @@ else:
 
 def predict_stroke(data):
     gender_map = {'Male': 0, 'Female': 1}
-    work_type_map = {'Private': 0, 'Self-employed': 1, 'children': 2, 'Govt_job': 3, 'Never_worked': 4}
+    work_type_map = {'Private': 0, 'Self-employed': 1, 'children': 2, 'Govt Job': 3, 'Never Worked': 4}
     residence_map = {'Urban': 0, 'Rural': 1}
     smoking_map = {'never smoked': 0, 'formerly smoked': 1, 'smokes': 2, 'Unknown': 3}
 
@@ -42,9 +42,8 @@ def predict_stroke(data):
                            float(data["avg_glucose_level"]),
                            float(data["bmi"]),
                            smoking_map[data["smoking_status"]]]])
-
     # Feature names
-    feature_names = ['gender', 'age', 'hypertension', 'heart_disease', 'ever_married', 
+    feature_names = ['age', 'gender', 'hypertension', 'heart_disease', 'ever_married', 
                      'work_type', 'Residence_type', 'avg_glucose_level', 'bmi', 'smoking_status']
 
     # Convert user data to DataFrame

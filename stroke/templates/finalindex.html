@@ -1,0 +1,191 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stroke Prediction</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'css/finalstyle.css' %}"
+    />
+    <script>
+      function validateForm() {
+        let age = document.getElementById("age").value;
+        let bmi = document.getElementById("bmi").value;
+        let glucose = document.getElementById("glucose").value;
+        if (age < 0 || bmi < 0 || glucose < 0) {
+          alert("Please enter valid positive values.");
+          return false;
+        }
+        return true;
+      }
+
+      window.onload = function () {
+        // Clear result on page refresh
+        const navigationType =
+          performance.getEntriesByType("navigation")[0]?.type;
+        if (navigationType === "reload") {
+          document.getElementById("result").innerHTML = "";
+          document.querySelector(".precaution-section").style.display = "none";
+        }
+
+        // Get user's location
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function (position) {
+            document.getElementById("latitude").value =
+              position.coords.latitude;
+            document.getElementById("longitude").value =
+              position.coords.longitude;
+          });
+        }
+      };
+    </script>
+  </head>
+  <body>
+    <div class="card">
+      <div class="section left-section">
+        <h3>Stroke Prediction Form</h3>
+        <form
+          action="{% url 'stroke_prediction' %}"
+          method="post"
+          onsubmit="return validateForm();"
+        >
+          {% csrf_token %}
+          <input type="hidden" id="latitude" name="latitude" />
+          <input type="hidden" id="longitude" name="longitude" />
+
+          <div class="form-field">
+            <label for="gender">Gender:</label>
+            <select name="gender" id="gender">
+              <option>Male</option>
+              <option>Female</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="age">Age:</label>
+            <input type="number" name="age" id="age" step="0.1" required />
+          </div>
+
+          <div class="form-field">
+            <label for="hypertension">Hypertension:</label>
+            <select name="hypertension" id="hypertension">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="heart_disease">Heart Disease:</label>
+            <select name="heart_disease" id="heart_disease">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="ever_married">Ever Married:</label>
+            <select name="ever_married" id="ever_married">
+              <option>Yes</option>
+              <option>No</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="work_type">Work Type:</label>
+            <select name="work_type" id="work_type">
+              <option>Private</option>
+              <option>Self-employed</option>
+              <option>Children</option>
+              <option>Govt Job</option>
+              <option>Never Worked</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="residence_type">Residence Type:</label>
+            <select name="residence_type" id="residence_type">
+              <option>Urban</option>
+              <option>Rural</option>
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="avg_glucose_level">Average Glucose Level:</label>
+            <input
+              type="number"
+              name="avg_glucose_level"
+              id="avg_glucose_level"
+              step="0.1"
+              required
+            />
+          </div>
+
+          <div class="form-field">
+            <label for="bmi">BMI:</label>
+            <input type="number" name="bmi" id="bmi" step="0.1" required />
+          </div>
+
+          <div class="form-field">
+            <label for="smoking_status">Smoking Status:</label>
+            <select name="smoking_status" id="smoking_status">
+              <option>never smoked</option>
+              <option>formerly smoked</option>
+              <option>smokes</option>
+              <option>Unknown</option>
+            </select>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="submit-button">Predict</button>
+        </form>
+      </div>
+
+      <div class="section right-section">
+          <div class="navbar-content">
+              <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
+          </div>
+        {% if result is not None %}
+        <h3 id="result">Prediction Result:{{ result|safe }}</h3>
+
+        {% if precautions_info is not None %}
+        <div class="precaution-section">
+          <h5>Immediate Actions:</h5>
+          <ul>
+            {% for action in precautions_info.immediate_actions %}
+            <li>{{ action }}</li>
+            {% endfor %}
+          </ul>
+
+          <h5>Safety Precautions:</h5>
+          <ul>
+            {% for precaution in precautions_info.safety_precautions %}
+            <li>{{ precaution }}</li>
+            {% endfor %}
+          </ul>
+
+          <h5>Lifestyle Changes:</h5>
+          <ul>
+            {% for change in precautions_info.lifestyle_changes %}
+            <li>{{ change }}</li>
+            {% endfor %}
+          </ul>
+
+          <h5>Warning Signs:</h5>
+          <ul>
+            {% for warning in precautions_info.warning_signs %}
+            <li>{{ warning }}</li>
+            {% endfor %}
+          </ul>
+          {% endif %}
+        </div>
+      </div>
+      <script>
+        document.body.classList.add("show-result");
+      </script>
+      {% endif %}
+    </div>
+  </body>
+</html>

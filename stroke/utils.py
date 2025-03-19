@@ -21,7 +21,7 @@ def get_nearest_hospitals(latitude, longitude):
                     "latitude": latitude,
                     "longitude": longitude
                 },
-                "radius": 5000.0  # 5km search radius
+                "radius": 1000.00 
             }
         }
     }
@@ -29,7 +29,7 @@ def get_nearest_hospitals(latitude, longitude):
     headers = {
         "Content-Type": "application/json",
         "X-Goog-Api-Key": GOOGLE_MAPS_API_KEY,
-        "X-Goog-FieldMask": "places.displayName,places.id,places.internationalPhoneNumber,places.nationalPhoneNumber"
+        "X-Goog-FieldMask": "places.displayName,places.id,places.internationalPhoneNumber,places.nationalPhoneNumber,places.websiteUri"
     }
 
     try:
@@ -45,19 +45,16 @@ def get_nearest_hospitals(latitude, longitude):
     hospitals = []
     for result in results:
         hospital_name = result.get("displayName", {}).get("text", "Unknown Hospital")
-        place_id = result.get("id")
         contact_Number =  result.get("internationalPhoneNumber")
+        website=result.get("websiteUri")
         
         hospitals.append({
             "displayName": hospital_name,
-            "internationalPhoneNumber": contact_Number
+            "internationalPhoneNumber": contact_Number,
+            "websiteUri": website
         })
     
     return {"places": hospitals}
 
 GOOGLE_MAPS_API_KEY = "AIzaSyAmKiXF-Umfng3qoOXRO4ewMHKz4SKDBUA"
-latitude = 10.5250
-longitude = 76.2139
 
-hospitals = get_nearest_hospitals(latitude, longitude)
-print(hospitals)

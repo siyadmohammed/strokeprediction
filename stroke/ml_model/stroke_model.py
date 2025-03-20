@@ -4,12 +4,16 @@ import joblib
 import pandas as pd
 import os
 
+# Get the absolute directory path of the current file
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Path to the model file
+MODEL_PATH = os.path.join(BASE_DIR, "best_model.pkl")
+
 # Load the model
-loaded_model = joblib.load(r"D:\codecraft essentials\sayooj\stroke_backend\stroke\ml_model\best_model.pkl")
-
+loaded_model = joblib.load(MODEL_PATH)
 # Load the scaler
-SCALER_PATH = r"D:\codecraft essentials\sayooj\stroke_backend\stroke\ml_model\scaler.pkl"
-
+SCALER_PATH = os.path.join(BASE_DIR, "scaler.pkl")
 # Check if file exists
 if os.path.exists(SCALER_PATH):
     print(f"Scaler file found at: {SCALER_PATH}")
